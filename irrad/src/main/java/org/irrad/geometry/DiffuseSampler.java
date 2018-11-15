@@ -47,7 +47,7 @@ public class DiffuseSampler extends Sampler {
             ry = lerp((double) dy / divy, (double) (dy + 1) / divy, ry);
 
             final double r = Math.sqrt(rx);
-            final double theta = 2 * Math.PI * ry;
+            final double theta = 2.0 * Math.PI * ry;
 
             final double x = r * Math.cos(theta);
             final double y = r * Math.sin(theta);
@@ -56,10 +56,11 @@ public class DiffuseSampler extends Sampler {
 
             Vec3 updir = Math.abs(normal.y) > 0.5 ? new Vec3(1, 0, 0) : Vec3.up();
             Vec3 xdir = Vec3.cross(updir, normal).normalized();
-            updir = Vec3.cross(normal, updir);
+            updir = Vec3.cross(normal, xdir);
 
-            final Vec3 dir = Vec3.add(Vec3.mul(normal, zdir.z),
-                    Vec3.add(Vec3.mul(xdir, zdir.x), Vec3.mul(zdir.y, updir)));
+            final Vec3 dir = Vec3
+                    .add(Vec3.mul(normal, zdir.z), Vec3.add(Vec3.mul(xdir, zdir.x), Vec3.mul(zdir.y, updir)))
+                    .normalized();
 
             final Vec3 o = Vec3.add(origin, Vec3.mul(normal, 0.0001));
 

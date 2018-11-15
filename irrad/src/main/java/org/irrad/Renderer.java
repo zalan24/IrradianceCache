@@ -60,7 +60,10 @@ class Renderer {
         job.intersection = mScene.cast(job.rayToCast);
         Vec3 origin = Vec3.add(job.intersection.ray.origin,
                 Vec3.mul(job.intersection.ray.direction, job.intersection.intersection.dist));
-        job.light = collect(origin, job.intersection.intersection.normal, depth);
+        if (job.intersection.shape.getMaterial().mAlbedo.length() > 0)
+            job.light = collect(origin, job.intersection.intersection.normal, depth);
+        else
+            job.light = Vec3.zero();
         job.rgb = Shader.shade(job.intersection, job.light);
     }
 

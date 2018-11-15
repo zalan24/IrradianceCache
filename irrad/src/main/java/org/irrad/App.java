@@ -11,7 +11,7 @@ import org.irrad.geometry.*;
 public class App {
     public static void main(String[] args) {
         Scene scene = Scene.BasicScene();
-        Camera camera = new Camera(new Vec3(0, 3, -3), new Vec3(0, 1, 0));
+        Camera camera = new Camera(new Vec3(2, 2, -2), new Vec3(0, 1, 0));
         Renderer renderer = new Renderer(scene, 2);
         Timer timer = new Timer();
         Image img = renderer.render(camera, 512, 512);
