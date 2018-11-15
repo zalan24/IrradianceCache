@@ -9,11 +9,15 @@ public class Scene {
 
     public static Scene BasicScene() {
         Scene ret = new Scene();
-        ret.add(new Plane(new Vec3(0), new Vec3(0, 1, 0)));
+        Plane p = new Plane(new Vec3(0), new Vec3(0, 1, 0));
+        p.setMaterial(new Material(new Vec3(1, 1, 1), Vec3.zero()));
+        ret.add(p);
         Sphere s = new Sphere(new Vec3(0, 1, 0), 1);
         ret.add(s);
-        s.setMaterial(new Material(new Vec3(), new Vec3(1, 0.8, 0.8)));
-        ret.add(new Sky());
+        s.setMaterial(new Material(new Vec3(), new Vec3(1, 0.2, 0.2)));
+        Sky sky = new Sky();
+        sky.setMaterial(new Material(Vec3.zero(), new Vec3(0, 1, 1)));
+        ret.add(sky);
         return ret;
     }
 

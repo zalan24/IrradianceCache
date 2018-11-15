@@ -35,6 +35,10 @@ public class Vec3 implements Cloneable {
         return new Vec3(a.x * b, a.y * b, a.z * b);
     }
 
+    public static Vec3 mul(Vec3 a, Vec3 b) {
+        return new Vec3(a.x * b.x, a.y * b.y, a.z * b.z);
+    }
+
     public static Vec3 div(Vec3 a, double b) {
         return new Vec3(a.x / b, a.y / b, a.z / b);
     }
@@ -70,5 +74,9 @@ public class Vec3 implements Cloneable {
 
     public static Vec3 zero() {
         return new Vec3(0);
+    }
+
+    public static Vec3 up() {
+        return new Vec3(0, 1, 0);
     }
 }

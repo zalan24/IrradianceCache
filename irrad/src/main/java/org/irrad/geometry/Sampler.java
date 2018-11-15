@@ -5,8 +5,8 @@ import java.util.Set;
 public abstract class Sampler {
 
     public static class Sample {
-        final Ray ray;
-        final double weight;
+        public final Ray ray;
+        public final double weight;
 
         public Sample(Ray r, double w) {
             ray = r;

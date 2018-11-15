@@ -10,7 +10,7 @@
             "request": "launch",
             "cwd": "${workspaceFolder}",
             "console": "internalConsole",
-            "internalConsoleOptions": "openOnSessionStart",
+            // "internalConsoleOptions": "openOnSessionStart",
             "stopOnEntry": false,
             "mainClass": "org.irrad.App",
             "args": "",
