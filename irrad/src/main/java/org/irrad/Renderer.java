@@ -40,6 +40,7 @@ class Renderer {
 
     public Image render(Camera camera, int width, int height) {
         Image ret = new Image(width, height);
+        Cache cache = new Cache();
         Collection<RenderJob> jobs = (Collection<RenderJob>) Collections
                 .synchronizedCollection(new ArrayList<RenderJob>());
         Collection<RenderJob> completejobs = (Collection<RenderJob>) Collections

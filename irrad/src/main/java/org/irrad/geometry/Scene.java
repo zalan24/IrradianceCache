@@ -1,6 +1,7 @@
 package org.irrad.geometry;
 
 import java.util.ArrayList;
+import org.irrad.graphics.*;
 
 public class Scene {
 
@@ -9,7 +10,10 @@ public class Scene {
     public static Scene BasicScene() {
         Scene ret = new Scene();
         ret.add(new Plane(new Vec3(0), new Vec3(0, 1, 0)));
-        ret.add(new Sphere(new Vec3(0, 1, 0), 1));
+        Sphere s = new Sphere(new Vec3(0, 1, 0), 1);
+        ret.add(s);
+        s.setMaterial(new Material(new Vec3(), new Vec3(1, 0.8, 0.8)));
+        ret.add(new Sky());
         return ret;
     }
 
@@ -24,10 +28,12 @@ public class Scene {
     public class Intersection {
         public Shape shape;
         public Intersectable.Hit intersection;
+        public Ray ray;
 
-        public Intersection(Shape s, Intersectable.Hit i) {
+        public Intersection(Shape s, Intersectable.Hit i, Ray r) {
             shape = s;
             intersection = i;
+            ray = r;
         }
     }
 
@@ -37,12 +43,12 @@ public class Scene {
         Shape ret = null;
         for (Shape s : mShapes) {
             Intersectable.Hit h = s.intersect(ray);
-            if (h.dist < mindist) {
+            if (h.dist <= mindist) {
                 mindist = h.dist;
                 hit = h;
                 ret = s;
             }
         }
-        return new Intersection(ret, hit);
+        return new Intersection(ret, hit, ray);
     }
 }

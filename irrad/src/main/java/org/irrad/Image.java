@@ -1,5 +1,6 @@
 package org.irrad;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 
 import org.irrad.geometry.*;
@@ -34,11 +35,8 @@ class Image {
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         for (int x = 0; x < width; ++x) {
             for (int y = 0; y < height; ++y) {
-                final int r = (int) Math.floor(image[x][y].x * 255);
-                final int g = (int) Math.floor(image[x][y].y * 255);
-                final int b = (int) Math.floor(image[x][y].z * 255);
-                int value = r + (g << 8) + (b << 16);
-                img.setRGB(x, y, value);
+                Color c = new Color((float) image[x][y].x, (float) image[x][y].y, (float) image[x][y].z);
+                img.setRGB(x, height - y - 1, c.getRGB());
             }
         }
         return img;
