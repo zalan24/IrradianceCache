@@ -29,6 +29,8 @@ public class Sphere extends Shape {
         }
         final double t = Math.sqrt(R * R - L2);
         double dist = rToClosest.length();
+        if (Vec3.dot(rToClosest, r.direction) < 0)
+            dist = -dist;
         if (dist - t > 0)
             dist = dist - t;
         else if (dist + t > 0)

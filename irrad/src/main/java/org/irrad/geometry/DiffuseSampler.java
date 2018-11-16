@@ -29,7 +29,7 @@ public class DiffuseSampler extends Sampler {
     @Override
     public Set<Sample> getSample(int raycount, Vec3 origin, Vec3 normal) {
         Set<Sample> ret = new HashSet<>();
-        if (normal.length() < 0.99)
+        if (normal.length() < 0.95)
             return ret;
         // Random rnd = new Random();
         for (int i = 0; i < raycount; ++i) {
@@ -64,7 +64,7 @@ public class DiffuseSampler extends Sampler {
 
             final Vec3 o = Vec3.add(origin, Vec3.mul(normal, 0.0001));
 
-            Sample s = new Sample(new Ray(o, dir), weight / 2 * Vec3.dot(dir, normal));
+            Sample s = new Sample(new Ray(o, dir), weight);
             ret.add(s);
         }
 

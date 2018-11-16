@@ -45,7 +45,7 @@ class Renderer {
         if (depth >= maxDepth)
             return sum;
         Sampler sampler = new DiffuseSampler(8, 8);
-        Set<Sampler.Sample> samples = sampler.getSample(64, origin, normal);
+        Set<Sampler.Sample> samples = sampler.getSample(256, origin, normal);
         Iterator<Sampler.Sample> itr = samples.iterator();
         while (itr.hasNext()) {
             Sampler.Sample sample = itr.next();
@@ -60,10 +60,12 @@ class Renderer {
         job.intersection = mScene.cast(job.rayToCast);
         Vec3 origin = Vec3.add(job.intersection.ray.origin,
                 Vec3.mul(job.intersection.ray.direction, job.intersection.intersection.dist));
-        if (job.intersection.shape.getMaterial().mAlbedo.length() > 0)
-            job.light = collect(origin, job.intersection.intersection.normal, depth);
-        else
+        if (job.intersection.shape.getMaterial().mAlbedo.length() > 0) {
+            Vec3 normal = job.intersection.intersection.normal;
+            job.light = collect(origin, normal, depth);
+        } else {
             job.light = Vec3.zero();
+        }
         job.rgb = Shader.shade(job.intersection, job.light);
     }
 
