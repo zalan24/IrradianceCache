@@ -79,4 +79,29 @@ public class Vec3 implements Cloneable {
     public static Vec3 up() {
         return new Vec3(0, 1, 0);
     }
+
+    /**
+     * 
+     * @param pos Position of the point
+     * @param A   Left Bottom Front corner of the bounding box
+     * @param B   Right Top Back corner of the bounding box
+     * @return true if pos is inside the bouding box defined by A and B
+     */
+    public static boolean inside(Vec3 pos, Vec3 A, Vec3 B) {
+        return pos.x >= A.x && pos.x <= B.x && pos.y >= A.y && pos.y <= B.y && pos.z >= A.z && pos.z <= B.z;
+    }
+
+    /**
+     * 
+     * @param pos Position of the point
+     * @param rad Radius of the circle around pos
+     * @param A   Left Bottom Front corner of the bounding box
+     * @param B   Right Top Back corner of the bounding box
+     * @return true if the circle around pos with radius of rad intersects the
+     *         bouding box defined by A and B
+     */
+    public static boolean inside(Vec3 pos, double rad, Vec3 A, Vec3 B) {
+        return pos.x + rad >= A.x && pos.x - rad <= B.x && pos.y + rad >= A.y && pos.y - rad <= B.y
+                && pos.z + rad >= A.z && pos.z - rad <= B.z;
+    }
 }
