@@ -143,7 +143,7 @@ class Renderer {
         }
 
         ArrayList<Thread> threads = new ArrayList<>();
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 8; i++) {
             Thread thr = new RenderThread();
             threads.add(thr);
             thr.start();

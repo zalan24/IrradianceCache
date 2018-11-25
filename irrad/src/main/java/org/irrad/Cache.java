@@ -135,19 +135,23 @@ class Cache {
             p.axis = CacheEntry.Axis.Z;
         }
         if (Vec3.inside(e.position, A, leftB)) {
-            if (p.left == null)
-                p.left = e;
-            else {
-                // System.out.println(" left");
-                insert(e, A, leftB, p.left);
+            synchronized (p) {
+                if (p.left == null) {
+                    p.left = e;
+                    return;
+                }
             }
+            // System.out.println(" left");
+            insert(e, A, leftB, p.left);
         } else {
-            if (p.right == null)
-                p.right = e;
-            else {
-                // System.out.println(" right");
-                insert(e, rightA, B, p.right);
+            synchronized (p) {
+                if (p.right == null) {
+                    p.right = e;
+                    return;
+                }
             }
+            // System.out.println(" right");
+            insert(e, rightA, B, p.right);
         }
     }
 
