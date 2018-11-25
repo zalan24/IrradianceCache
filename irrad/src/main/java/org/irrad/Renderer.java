@@ -12,15 +12,40 @@ import org.irrad.graphics.*;
 
 class Renderer {
     final int mCacheCapacity;
-    final int mDivisionX = 4;
-    final int mDivisionY = 4;
-    final int mSamples = 16;
+    final int mDivisionX = 8;
+    final int mDivisionY = 8;
+    final int mSamples = 256;
 
     final double mCacheRadius = 0.1;
-    final double mCacheCos = 0.9;
+    final double mCacheCos = 0.8;
 
     private Scene mScene;
     private int maxDepth;
+
+    private Integer index = 0;
+    private Object[] jobs;
+    Cache cache;
+    Collection<RenderJob> completejobs;
+
+    private class RenderThread extends Thread {
+
+        @Override
+        public void run() {
+            while (true) {
+                // RenderJob j = jobs.iterator().next();
+                RenderJob j = null;
+                synchronized (index) {
+                    if (index >= jobs.length)
+                        return;
+                    j = (RenderJob) jobs[index];
+                    index++;
+                }
+                doJob(j, 1, cache);
+                completejobs.add(j);
+            }
+        }
+
+    }
 
     /**
      * 
@@ -64,11 +89,11 @@ class Renderer {
     private Vec3 collect(Vec3 origin, Vec3 normal, int depth, Cache cache) {
         // Only diffuse surfaces are supported
         Vec3 sum = Vec3.zero();
-        if (depth >= maxDepth)
-            return sum;
         Vec3 l = cache.get(origin, normal);
         if (l != null)
-            return l;
+            return l; // Vec3.zero();
+        if (depth >= maxDepth)
+            return sum;
         Sampler sampler = new DiffuseSampler(mDivisionX, mDivisionY);
         Set<Sampler.Sample> samples = sampler.getSample(mSamples, origin, normal);
         Iterator<Sampler.Sample> itr = samples.iterator();
@@ -78,7 +103,9 @@ class Renderer {
             doJob(job, depth + 1, cache);
             sum = Vec3.add(sum, Vec3.mul(job.rgb, sample.weight));
         }
-        cache.add(origin, normal, sum);
+        if (Vec3.inside(origin, new Vec3(-10), new Vec3(10)))
+            cache.add(origin, normal, sum);
+        // sum = new Vec3(1, 0, 0);
         return sum;
     }
 
@@ -97,10 +124,9 @@ class Renderer {
 
     public Image render(Camera camera, int width, int height) {
         Image ret = new Image(width, height);
-        Cache cache = new Cache(mCacheCapacity, mCacheRadius, mCacheCos);
+        cache = new Cache(mCacheCapacity, mCacheRadius, mCacheCos);
         ArrayList<RenderJob> shuffledRenderjobs = new ArrayList<>();
-        Collection<RenderJob> completejobs = (Collection<RenderJob>) Collections
-                .synchronizedCollection(new ArrayList<RenderJob>());
+        completejobs = (Collection<RenderJob>) Collections.synchronizedCollection(new ArrayList<RenderJob>());
         for (int w = 0; w < width; ++w) {
             for (int h = 0; h < height; ++h) {
                 RenderJob job = new RenderJob(camera.getRay(width, height, w, h), w, h);
@@ -108,22 +134,26 @@ class Renderer {
             }
         }
         Random rnd = new Random();
-        Object[] jobs = shuffledRenderjobs.toArray();
-        // RenderJob[] jobs = (RenderJob[]) arr;
+        jobs = shuffledRenderjobs.toArray();
         for (int i = 0; i < jobs.length; i++) {
             int j = rnd.nextInt(jobs.length);
             Object s = jobs[i];
             jobs[i] = jobs[j];
             jobs[j] = s;
         }
-        int index = 0;
-        while (index < jobs.length) {
-            // RenderJob j = jobs.iterator().next();
 
-            RenderJob j = (RenderJob) jobs[index];
-            index++;
-            doJob(j, 1, cache);
-            completejobs.add(j);
+        ArrayList<Thread> threads = new ArrayList<>();
+        for (int i = 0; i < 1; i++) {
+            Thread thr = new RenderThread();
+            threads.add(thr);
+            thr.start();
+        }
+        for (Thread thr : threads) {
+            try {
+                thr.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
         for (RenderJob job : completejobs) {
             ret.setPixel(job.x, job.y, job.rgb);

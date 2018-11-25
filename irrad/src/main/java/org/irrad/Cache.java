@@ -8,6 +8,12 @@ class Cache {
         final Vec3 normal;
         final Vec3 light;
 
+        enum Axis {
+            X, Y, Z
+        }
+
+        Axis axis;
+
         CacheEntry left = null;
         CacheEntry right = null;
 
@@ -36,40 +42,50 @@ class Cache {
         mCos = aCos;
     }
 
-    private CacheEntry search(Vec3 position, Vec3 normal, CacheEntry p, Vec3 A, Vec3 B) {
+    private CacheEntry search(Vec3 position, Vec3 normal, CacheEntry p) {
         if (p == null)
             return null;
-        Vec3 AB = Vec3.sub(B, A);
-        Vec3 leftB;
-        Vec3 rightA;
-        if (Math.abs(AB.x) >= Math.abs(AB.y) && Math.abs(AB.x) >= Math.abs(AB.z)) {
-            leftB = new Vec3(p.position.x, B.y, B.z);
-            rightA = new Vec3(p.position.x, A.y, A.z);
-        } else if (Math.abs(AB.y) >= Math.abs(AB.z)) {
-            leftB = new Vec3(B.x, p.position.y, B.z);
-            rightA = new Vec3(A.x, p.position.y, A.z);
-        } else {
-            leftB = new Vec3(B.x, B.y, p.position.z);
-            rightA = new Vec3(A.x, A.y, p.position.z);
+
+        boolean leftSide = false;
+        boolean rightSide = false;
+        if (p.left == null && p.right == null) {
+            if (Vec3.dot(p.normal, normal) < mCos || Vec3.sqDistance(p.position, position) > mRange * mRange)
+                return null;
+            return p;
         }
+        switch (p.axis) {
+        case X:
+            leftSide = position.x <= p.position.x + mRange;
+            rightSide = position.x >= p.position.x - mRange;
+            break;
+        case Y:
+            leftSide = position.y <= p.position.y + mRange;
+            rightSide = position.y >= p.position.y - mRange;
+            break;
+        case Z:
+            leftSide = position.z <= p.position.z + mRange;
+            rightSide = position.z >= p.position.z - mRange;
+            break;
+        }
+
         CacheEntry left = null;
         CacheEntry right = null;
-        if (Vec3.inside(position, mRange, A, leftB)) {
+        if (leftSide) {
             if (p.left == null)
                 left = null;
             else {
-                left = search(position, normal, p.left, A, leftB);
+                left = search(position, normal, p.left);
                 if (left != null && (Vec3.dot(left.normal, normal) < mCos
                         || Vec3.sqDistance(left.position, position) > mRange * mRange))
                     left = null;
             }
         }
-        if (Vec3.inside(position, mRange, rightA, B)) {
+        if (rightSide) {
             if (p.right == null)
                 right = null;
             else {
                 // System.out.println(" right");
-                right = search(position, normal, p.right, rightA, B);
+                right = search(position, normal, p.right);
                 if (right != null && (Vec3.dot(right.normal, normal) < mCos
                         || Vec3.sqDistance(right.position, position) > mRange * mRange))
                     right = null;
@@ -82,6 +98,8 @@ class Cache {
             ret = left;
         else if (Vec3.sqDistance(left.position, position) < Vec3.sqDistance(right.position, position))
             ret = left;
+        else
+            ret = right;
         if (Vec3.dot(p.normal, normal) < mCos || Vec3.sqDistance(p.position, position) > mRange * mRange)
             return ret;
         if (ret == null)
@@ -92,9 +110,7 @@ class Cache {
     }
 
     public Vec3 get(Vec3 position, Vec3 normal) {
-        Vec3 A = new Vec3(-1000000);
-        Vec3 B = new Vec3(1000000);
-        CacheEntry ret = search(position, normal, parent, A, B);
+        CacheEntry ret = search(position, normal, parent);
         if (ret == null)
             return null;
         return ret.light;
@@ -104,15 +120,19 @@ class Cache {
         Vec3 AB = Vec3.sub(B, A);
         Vec3 leftB;
         Vec3 rightA;
-        if (Math.abs(AB.x) >= Math.abs(AB.y) && Math.abs(AB.x) >= Math.abs(AB.z)) {
+        if (Math.abs(AB.x) >= Math.abs(AB.y) && Math.abs(AB.x) >= Math.abs(AB.z) && e.axis == null
+                || e.axis == CacheEntry.Axis.X) {
             leftB = new Vec3(p.position.x, B.y, B.z);
             rightA = new Vec3(p.position.x, A.y, A.z);
-        } else if (Math.abs(AB.y) >= Math.abs(AB.z)) {
+            p.axis = CacheEntry.Axis.X;
+        } else if (Math.abs(AB.y) >= Math.abs(AB.z) && e.axis == null || e.axis == CacheEntry.Axis.Y) {
             leftB = new Vec3(B.x, p.position.y, B.z);
             rightA = new Vec3(A.x, p.position.y, A.z);
+            p.axis = CacheEntry.Axis.Y;
         } else {
             leftB = new Vec3(B.x, B.y, p.position.z);
             rightA = new Vec3(A.x, A.y, p.position.z);
+            p.axis = CacheEntry.Axis.Z;
         }
         if (Vec3.inside(e.position, A, leftB)) {
             if (p.left == null)
