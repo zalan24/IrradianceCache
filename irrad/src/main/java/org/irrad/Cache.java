@@ -3,6 +3,7 @@ package org.irrad;
 import org.irrad.geometry.Vec3;
 
 class Cache {
+
     static class CacheEntry {
         final Vec3 position;
         final Vec3 normal;

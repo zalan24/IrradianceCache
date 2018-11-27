@@ -15,6 +15,8 @@ class Renderer {
     final int mDivisionX = 8;
     final int mDivisionY = 8;
     final int mSamples = 256;
+    final int mNumThreads = 16;
+    boolean mHighLightCachePoint = false;
 
     final double mCacheRadius = 0.1;
     final double mCacheCos = 0.8;
@@ -22,7 +24,7 @@ class Renderer {
     private Scene mScene;
     private int maxDepth;
 
-    private Integer index = 0;
+    private int index = 0;
     private Object[] jobs;
     Cache cache;
     Collection<RenderJob> completejobs;
@@ -34,14 +36,16 @@ class Renderer {
             while (true) {
                 // RenderJob j = jobs.iterator().next();
                 RenderJob j = null;
-                synchronized (index) {
+                synchronized (jobs) {
                     if (index >= jobs.length)
                         return;
                     j = (RenderJob) jobs[index];
                     index++;
                 }
                 doJob(j, 1, cache);
+                // synchronized (completejobs) {
                 completejobs.add(j);
+                // }
             }
         }
 
@@ -105,7 +109,8 @@ class Renderer {
         }
         if (Vec3.inside(origin, new Vec3(-10), new Vec3(10)))
             cache.add(origin, normal, sum);
-        // sum = new Vec3(1, 0, 0);
+        if (mHighLightCachePoint)
+            sum = new Vec3(1, 0, 0);
         return sum;
     }
 
@@ -143,7 +148,7 @@ class Renderer {
         }
 
         ArrayList<Thread> threads = new ArrayList<>();
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < mNumThreads; i++) {
             Thread thr = new RenderThread();
             threads.add(thr);
             thr.start();
