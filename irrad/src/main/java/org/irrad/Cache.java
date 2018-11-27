@@ -31,6 +31,10 @@ class Cache {
     final double mRange;
     final double mCos;
 
+    int size() {
+        return mSize;
+    }
+
     /**
      * 
      * @param aCapacity max number of elemnets

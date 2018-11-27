@@ -10,11 +10,13 @@ import org.irrad.geometry.*;
 
 public class App {
     public static void main(String[] args) {
-        Scene scene = Scene.BasicScene();
-        Camera camera = new Camera(new Vec3(2, 2, -2), new Vec3(0, 1, 0));
-        Renderer renderer = new Renderer(scene, 2, 50000);
+        // Scene scene = Scene.BasicScene();
+        Scene scene = Scene.CornellBox();
+        Camera camera = new Camera(new Vec3(0.5, 0.5, -1), new Vec3(0.5));
+        Renderer renderer = new Renderer(scene, 10, 50000);
+        renderer.mAllowCachingOnFirstLevel = false;
         Timer timer = new Timer();
-        Image img = renderer.render(camera, 512, 512);
+        Image img = renderer.render(camera, 1920, 1080);
         System.out.print(timer.elapsed() + "s");
 
         BufferedImage bufferedImage = img.toBufferedImage();

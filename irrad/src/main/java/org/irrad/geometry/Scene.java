@@ -21,6 +21,37 @@ public class Scene {
         return ret;
     }
 
+    public static Scene CornellBox() {
+        Scene ret = new Scene();
+        Plane bottom = new Plane(new Vec3(0), new Vec3(0, 1, 0));
+        bottom.setMaterial(new Material(new Vec3(0.9), Vec3.zero()));
+        ret.add(bottom);
+        Plane top = new Plane(new Vec3(0, 1, 0), new Vec3(0, -1, 0));
+        top.setMaterial(new Material(new Vec3(0.9), Vec3.zero()));
+        ret.add(top);
+        Plane back = new Plane(new Vec3(0, 0, 1), new Vec3(0, 0, -1));
+        back.setMaterial(new Material(new Vec3(0.9), Vec3.zero()));
+        ret.add(back);
+        Plane left = new Plane(new Vec3(0, 0, 0), new Vec3(1, 0, 0));
+        left.setMaterial(new Material(new Vec3(0.9, 0, 0), Vec3.zero()));
+        ret.add(left);
+        Plane right = new Plane(new Vec3(1, 0, 0), new Vec3(-1, 0, 0));
+        right.setMaterial(new Material(new Vec3(0, 0.9, 0), Vec3.zero()));
+        ret.add(right);
+
+        Sphere s = new Sphere(new Vec3(0.5, 1, 0.5), 0.1);
+        ret.add(s);
+        s.setMaterial(new Material(new Vec3(), Vec3.mul(10, new Vec3(0.8, 0.75, 0.6))));
+
+        Sphere s2 = new Sphere(new Vec3(0.5, 0.5, 0.5), 0.2);
+        ret.add(s2);
+        s2.setMaterial(new Material(new Vec3(0.4), Vec3.zero()));
+        Sky sky = new Sky();
+        sky.setMaterial(new Material(Vec3.zero(), new Vec3(1)));
+        ret.add(sky);
+        return ret;
+    }
+
     public void add(Shape s) {
         mShapes.add(s);
     }
