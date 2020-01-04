@@ -102,17 +102,17 @@ class Renderer {
         // Only diffuse surfaces are supported
         Vec3 sum = Vec3.zero();
         final boolean allowed = mAllowCachingOnFirstLevel || depth > 1;
+        Cache.CacheEntry entry = cache.get(origin, normal);
         if (allowed) {
             // Caching allowed
-            Vec3 l = cache.get(origin, normal);
-            if (l != null)
-                return l;
+            if (entry != null && entry.depth <= depth)
+                return entry.light;
         }
         boolean cached = false;
         if (prevcache != null && allowed) {
-            Vec3 l = prevcache.get(origin, normal);
-            if (l != null) {
-                sum = l;
+            Cache.CacheEntry prevEntry = prevcache.get(origin, normal);
+            if (prevEntry != null && prevEntry.depth <= depth) {
+                sum = prevEntry.light;
                 cached = true;
             }
         }
@@ -129,8 +129,8 @@ class Renderer {
                 sum = Vec3.add(sum, Vec3.mul(job.rgb, sample.weight));
             }
         }
-        if (depth == aStartDepth && Vec3.inside(origin, new Vec3(-10), new Vec3(10)))
-            cache.add(origin, normal, sum);
+        if ((entry == null || entry.depth > depth) && Vec3.inside(origin, new Vec3(-10), new Vec3(10)))
+            cache.add(origin, normal, sum, depth);
         if (mHighLightCachePoint)
             sum = new Vec3(1, 0, 0);
         return sum;

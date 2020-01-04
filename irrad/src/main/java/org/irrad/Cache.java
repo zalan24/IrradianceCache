@@ -8,6 +8,7 @@ class Cache {
         final Vec3 position;
         final Vec3 normal;
         final Vec3 light;
+        final int depth;
 
         enum Axis {
             X, Y, Z
@@ -18,10 +19,11 @@ class Cache {
         CacheEntry left = null;
         CacheEntry right = null;
 
-        public CacheEntry(Vec3 p, Vec3 n, Vec3 l) {
+        public CacheEntry(Vec3 p, Vec3 n, Vec3 l, int d) {
             position = p;
             normal = n;
             light = l;
+            depth = d;
         }
     }
 
@@ -101,6 +103,10 @@ class Cache {
             ret = right;
         else if (right == null)
             ret = left;
+        else if (left.depth < right.depth)
+            ret = left;
+        else if (right.depth < left.depth)
+            ret = right;
         else if (Vec3.sqDistance(left.position, position) < Vec3.sqDistance(right.position, position))
             ret = left;
         else
@@ -109,16 +115,17 @@ class Cache {
             return ret;
         if (ret == null)
             return p;
+        if (ret.depth < p.depth)
+            return ret;
+        if (p.depth < ret.depth)
+            return p;
         if (Vec3.sqDistance(ret.position, position) < Vec3.sqDistance(p.position, position))
             return ret;
         return p;
     }
 
-    public Vec3 get(Vec3 position, Vec3 normal) {
-        CacheEntry ret = search(position, normal, parent);
-        if (ret == null)
-            return null;
-        return ret.light;
+    public CacheEntry get(Vec3 position, Vec3 normal) {
+        return search(position, normal, parent);
     }
 
     private void insert(CacheEntry e, Vec3 A, Vec3 B, CacheEntry p) {
@@ -160,8 +167,8 @@ class Cache {
         }
     }
 
-    public void add(Vec3 position, Vec3 normal, Vec3 light) {
-        CacheEntry e = new CacheEntry(position, normal, light);
+    public void add(Vec3 position, Vec3 normal, Vec3 light, int depth) {
+        CacheEntry e = new CacheEntry(position, normal, light, depth);
         Vec3 A = new Vec3(-1000000);
         Vec3 B = new Vec3(1000000);
         if (parent == null)

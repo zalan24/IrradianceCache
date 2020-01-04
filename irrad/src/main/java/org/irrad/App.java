@@ -16,7 +16,7 @@ public class App {
         Renderer renderer = new Renderer(scene, 10, 50000);
         renderer.mAllowCachingOnFirstLevel = false;
         Timer timer = new Timer();
-        Image img = renderer.render(camera, 1920, 1080);
+        Image img = renderer.render(camera, 512, 512);
         System.out.print(timer.elapsed() + "s");
 
         BufferedImage bufferedImage = img.toBufferedImage();
