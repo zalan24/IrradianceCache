@@ -12,9 +12,9 @@ import org.irrad.graphics.*;
 
 class Renderer {
     final int mCacheCapacity;
-    final int mDivisionX = 2;
-    final int mDivisionY = 2;
-    final int mSamples = 4;
+    final int mDivisionX = 8;
+    final int mDivisionY = 8;
+    final int mSamples = 64;
     final int mNumThreads = 16;
     boolean mHighLightCachePoint = false;
     boolean mAllowCachingOnFirstLevel = true;
