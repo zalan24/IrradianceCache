@@ -52,6 +52,34 @@ public class Scene {
         return ret;
     }
 
+    public static Scene SpheresScene() {
+        Scene ret = new Scene();
+        Plane bottom = new Plane(new Vec3(0), new Vec3(0, 1, 0));
+        bottom.setMaterial(new Material(new Vec3(0.9, 0.1, 0.1), Vec3.zero()));
+        ret.add(bottom);
+        Plane back = new Plane(new Vec3(1, 0, 1), new Vec3(-1, 0, -1).normalized());
+        back.setMaterial(new Material(new Vec3(0.1, 0.9, 0.1), Vec3.zero()));
+        ret.add(back);
+
+        Sphere s1 = new Sphere(new Vec3(0.85, 0.201, 0.65), 0.2);
+        ret.add(s1);
+        s1.setMaterial(new Material(new Vec3(0.4), Vec3.zero()));
+        Sphere s2 = new Sphere(new Vec3(0.65, 0.201, 0.85), 0.2);
+        ret.add(s2);
+        s2.setMaterial(new Material(new Vec3(0.4), Vec3.zero()));
+        Sphere s3 = new Sphere(new Vec3(0.5, 0.201, 0.5), 0.2);
+        ret.add(s3);
+        s3.setMaterial(new Material(new Vec3(0.4), Vec3.zero()));
+        Sphere s4 = new Sphere(new Vec3(0.6, 0.553, 0.6), 0.2);
+        ret.add(s4);
+        s4.setMaterial(new Material(new Vec3(0.4), Vec3.zero()));
+
+        Sky sky = new Sky();
+        sky.setMaterial(new Material(Vec3.zero(), new Vec3(1)));
+        ret.add(sky);
+        return ret;
+    }
+
     public void add(Shape s) {
         mShapes.add(s);
     }

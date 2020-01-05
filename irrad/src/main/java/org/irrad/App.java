@@ -11,7 +11,8 @@ import org.irrad.geometry.*;
 public class App {
     public static void main(String[] args) {
         // Scene scene = Scene.BasicScene();
-        Scene scene = Scene.CornellBox();
+        // Scene scene = Scene.CornellBox();
+        Scene scene = Scene.SpheresScene();
         Camera camera = new Camera(new Vec3(0.5, 0.5, -1), new Vec3(0.5));
         Renderer renderer = new Renderer(scene, 10, 50000);
         // Renderer renderer = new Renderer(scene, 3, 50000);
