@@ -14,8 +14,12 @@ class Renderer {
     final int mCacheCapacity;
     final int mDivisionX = 8;
     final int mDivisionY = 8;
-    final int mSamples = 64;
-    final int mNumThreads = 16;
+    final int mSamples = 256;
+    // final int mDivisionX = 4;
+    // final int mDivisionY = 4;
+    // final int mSamples = 16;
+    final boolean mCosineSampling = true;
+    final int mNumThreads = 8;
     boolean mHighLightCachePoint = false;
     boolean mAllowCachingOnFirstLevel = true;
 
@@ -119,15 +123,18 @@ class Renderer {
         if (depth >= aMaxDepth)
             return sum;
         if (!cached) {
-            Sampler sampler = new DiffuseSampler(mDivisionX, mDivisionY);
+            Sampler sampler = new DiffuseSampler(mDivisionX, mDivisionY, mCosineSampling);
             Set<Sampler.Sample> samples = sampler.getSample(mSamples, origin, normal);
             Iterator<Sampler.Sample> itr = samples.iterator();
+            // double weightSum = 0;
             while (itr.hasNext()) {
                 Sampler.Sample sample = itr.next();
                 RenderJob job = new RenderJob(sample.ray, 0, 0);
                 doJob(job, depth + 1, cache, aStartDepth, aMaxDepth);
                 sum = Vec3.add(sum, Vec3.mul(job.rgb, sample.weight));
+                // weightSum += sample.weight;
             }
+            // sum = Vec3.mul(sum, 1/weightSum);
         }
         if ((entry == null || entry.depth > depth) && Vec3.inside(origin, new Vec3(-10), new Vec3(10)))
             cache.add(origin, normal, sum, depth);

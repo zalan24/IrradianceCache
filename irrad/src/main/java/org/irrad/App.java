@@ -14,9 +14,11 @@ public class App {
         Scene scene = Scene.CornellBox();
         Camera camera = new Camera(new Vec3(0.5, 0.5, -1), new Vec3(0.5));
         Renderer renderer = new Renderer(scene, 10, 50000);
+        // Renderer renderer = new Renderer(scene, 3, 50000);
         renderer.mAllowCachingOnFirstLevel = false;
         Timer timer = new Timer();
         Image img = renderer.render(camera, 1920, 1080);
+        // Image img = renderer.render(camera, 512, 512);
         System.out.print(timer.elapsed() + "s");
 
         BufferedImage bufferedImage = img.toBufferedImage();
